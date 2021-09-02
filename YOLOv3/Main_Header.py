@@ -188,14 +188,14 @@ def cmd_init(mode):
     """실행 배치파일 전달명령어 원본 추출"""
     with open(MODEL_PATH + (DETECT_BAT if mode else DETECT_BAT_TRANSFER), 'r') as Detect_bat:
         total = Detect_bat.readlines()
-        return total[0] + total[1]
+    return total[0] + total[1]
 
 
 def cmd_test_init():
     """테스트용 :: 실행 배치파일 전달명령어 원본 추출"""
     with open(MODEL_PATH + DETECT_BAT_TEST, 'r') as Detect_bat_test:
-        total = Detect_bat_test.readline()
-        return total[0] + total[1]
+        total = Detect_bat_test.readlines()
+    return total[0] + total[1]
 
 
 def cmd_final(cmd_init, epsilon, epsilon_discount, learning_rate, node, step_mode, batch_size):

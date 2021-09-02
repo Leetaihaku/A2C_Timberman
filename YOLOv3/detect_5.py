@@ -167,7 +167,7 @@ def detect(save_img=False):
             SECOND = True
             Next_state, Done = Agent.Step5_training(State)
             # 안정화 지연
-            time.sleep(0.1)
+            time.sleep(RL.TRAIN_DETECT_DELAY)
         # 부적합(시간제한초과에 따른 비정상 종료)
         elif SECOND and (torch.equal(Next_state, torch.tensor([0., 0., 0., 0., 1.], device='cuda'))
             or torch.equal(Next_state, torch.tensor([0., 0., 1., 1., 0.], device='cuda'))):

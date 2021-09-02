@@ -44,9 +44,15 @@ STATE_DIC = {'11': 0b100000000000, '12': 0b010000000000, '21': 0b001000000000, '
              '31': 0b000010000000, '32': 0b000001000000, '41': 0b000000100000, '42': 0b000000010000,
              '51': 0b000000001000, '52': 0b000000000100, '61': 0b000000000010, '62': 0b000000000001,
              '00': 0b000000000000}
-# 6상태 생성 보조용 딕셔너리
-FUTURE6_ASSISTANT = ['00', '10', '10', '10', '10', '10']
+# 5상태 생성 보조용 딕셔너리
+FUTURE5_ASSISTANT = ['00', '10', '10', '10', '10']
 FUTURE_ASSISTANT = '10'
+
+# 플레이 안정화 지연
+TRAIN_ACTION_DELAY = 0.2
+TRAIN_DETECT_DELAY = 0.1
+TEST_ACTION_DELAY = 0.175
+TEST_DETECT_DELAY = 0.1
 
 
 
@@ -148,6 +154,7 @@ class Agent:
         self.Epsilon = self.Epsilon - self.Epsilon_discount if self.Epsilon > self.Epsilon_lower_limit else self.Epsilon_lower_limit
         action = self.Actor(self.State_to_network_input(state))
         action = action.argmin().item() if self.Epsilon > np.random.uniform(0, 1) else action.argmax().item()
+        print(f'action : {action}')
         if mode == 'train':
             keyboard.press_and_release(ACTION_OPTION[action])
         return action
@@ -258,14 +265,14 @@ class Agent:
 
 
     def Action6_executer(self, future_arr):
-        """테스트 :: 6단계 행동시퀀스 생성"""
-        tensor6 = torch.tensor([], device='cuda')
+        """테스트 :: 5단계 행동시퀀스 생성"""
+        tensor5 = torch.tensor([], device='cuda')
         for i in range(len(future_arr)):
-            tensor6 = torch.cat((tensor6, self.State_to_network_input(future_arr[i])), dim=0)
-        action6 = self.Actor(torch.reshape(tensor6, (6, 6))).max(1)[1]
-        for i in range(6):
+            tensor5 = torch.cat((tensor5, self.State_to_network_input(future_arr[i])), dim=0)
+        action6 = self.Actor(torch.reshape(tensor5, (5, 6))).max(1)[1]
+        for i in range(5):
             keyboard.press_and_release(ACTION_OPTION[action6[i].item()])
-            time.sleep(0.2)
+            time.sleep(TRAIN_ACTION_DELAY)
         return
 
 
@@ -273,8 +280,9 @@ class Agent:
         """5-step 훈련 :: 1-step 미래상태 생성"""
         for step in range(5):
             # 상태에 따른 정책행동 실행 & 안정화 지연
+            print(f'state : {state}')
             mini_action = self.Action(state)
-            time.sleep(0.15)
+            time.sleep(TRAIN_ACTION_DELAY)
             # 행동에 따른 다음상태 케이스 분류
             # 위험상태에서의 나쁜 행동
             if (str(int(state[0].item()))[:2] in ['51', '61'] and mini_action == 0) or (str(int(state[0].item())))[:2] in ['52', '62'] and mini_action == 1:
@@ -324,7 +332,7 @@ class Agent:
             # 상태에 따른 정책행동 실행 & 안정화 지연
             mini_action = self.Actor(self.State_to_network_input(state)).max(0)[1].item()
             keyboard.press_and_release(ACTION_OPTION[mini_action])
-            time.sleep(0.15)
+            time.sleep(TEST_ACTION_DELAY)
             # 행동에 따른 다음상태 케이스 분류
             # 위험상태에서의 나쁜 행동
             if (str(int(state[0].item()))[:2] in ['51', '61'] and mini_action == 0) or (str(int(state[0].item())))[:2] in ['52', '62'] and mini_action == 1:
@@ -459,15 +467,15 @@ class Environment:
 
 
     def Future6_generator(self, state):
-        """테스트 :: 6단계 변환상태시퀀스 생성"""
-        # 6단계 상태시퀀스
+        """테스트 :: 5단계 변환상태시퀀스 생성"""
+        # 5단계 상태시퀀스
         future_state_arr = []
 
-        # 6단계 미래 생성
-        for i in range(6):
+        # 5단계 미래 생성
+        for i in range(5):
             future_state = ''
             for j in range(len(state) >> 1):
-                future_state += FUTURE6_ASSISTANT[i]
+                future_state += FUTURE5_ASSISTANT[i]
             future_state = str((int(future_state) if future_state != '' else 0) + (int(state) if state != '' else 0))
             # 인덱스 초과 상태에 대한 전처리
             for k in range(len(future_state) >> 1):

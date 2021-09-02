@@ -23,10 +23,22 @@ from collections import deque
 # print(torch.tensor([0., 0., 0., 0., 1.], device='cuda'))
 
 
-agent = RL.Agent(0.999, 0.001, 0.001, 32, 1, 4)
-env = RL.Environment()
 
-print(agent.Action(torch.tensor([3111., 62., 0., 0., 0.], device='cuda')))
+def Actor_network():
+    """액터-신경망"""
+    model = nn.Sequential()
+    model.add_module('fc1', nn.Linear(12, 32))
+    model.add_module('relu', nn.ReLU())
+    model.add_module('drop', nn.Dropout(p=0.5))
+    model.add_module('fc2', nn.Linear(32, 2))
+    model.add_module('log_softmax', nn.LogSoftmax(dim=0))
+    return model
+
+net = Actor_network().cuda()
+print(net(torch.tensor([1., 1., 1., 1., 0., 0., 0., 0., 1., 1., 0., 0.], device='cuda')))
+
+
+# print(agent.Actor(torch.tensor([-1., -1., 0., 1., 1.], device='cuda')))
 # print(agent.Actor(torch.tensor([-1., -1., 0., 1., 1.], device='cuda')))
 
 #
