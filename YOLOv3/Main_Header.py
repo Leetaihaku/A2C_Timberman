@@ -10,7 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 ADDRESS_BlueStack = "C:\\Program Files\\BlueStacks\\Bluestacks.exe"
 # 이미지, 디바이스, 감지모델 경로
 WEBCAM_PATH = DEVICE_PATH = '0'
-MODEL_PATH = "C:\\RL_Timberman\\YOLOv3\\"
+MODEL_PATH = "C:\\A2C_Timberman\\YOLOv3\\"
 BEST = 'best.pt'
 
 # 학습모델, 배치파일 경로(훈련용)

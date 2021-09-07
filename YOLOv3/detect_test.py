@@ -21,7 +21,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 def show_detecting_img(name, im0):
     """오픈소스-감지이미지 출력"""
     cv2.namedWindow(name)
-    cv2.moveWindow(name, 1920, -550)
+    cv2.moveWindow(name, 1680, -550)
     cv2.resizeWindow(name, 1080, 720)
     im0 = cv2.resize(im0, (1080, 720))
     cv2.imshow(name, im0)

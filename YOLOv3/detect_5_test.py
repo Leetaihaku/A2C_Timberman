@@ -21,7 +21,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 def show_detecting_img(name, im0):
     """오픈소스-감지이미지 출력"""
     cv2.namedWindow(name)
-    cv2.moveWindow(name, 1920, -550)
+    cv2.moveWindow(name, 1680, -550)
     cv2.resizeWindow(name, 1080, 720)
     im0 = cv2.resize(im0, (1080, 720))
     cv2.imshow(name, im0)
@@ -154,7 +154,7 @@ def detect(save_img=False):
                         center_array.append([label[:-5], center])
 
             # 실시간 모니터링 화면 출력
-            # if view_img: show_detecting_img('Detector', im0)
+            if view_img: show_detecting_img('Detector', im0)
 
         ########################################################################################################
         # 다음상태 추출(단, 종점이면 다음 상태 = [0, 0, 0, 0, 0])
