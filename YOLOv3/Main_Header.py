@@ -6,8 +6,11 @@ import keyboard
 
 from torch.utils.tensorboard import SummaryWriter
 
-# BlueStack(앱 플레이어) 실행경로
+# BlueStack(앱 플레이어) 실행경로, 리부팅 경로
 ADDRESS_BlueStack = "C:\\Program Files\\BlueStacks\\Bluestacks.exe"
+REBOOT_PROGRAM_COMMAND = '\"C:\Program Files\BlueStacks_nxt\HD-Player.exe\" --instance Nougat32'
+KILL_PROGRAM_COMMAND = 'taskkill /f /im HD-player.exe'
+
 # 이미지, 디바이스, 감지모델 경로
 WEBCAM_PATH = DEVICE_PATH = '0'
 MODEL_PATH = "C:\\A2C_Timberman\\YOLOv3\\"
@@ -252,36 +255,26 @@ def reboot_game():
     """에피소드 10회당 게임 리부트"""
     keyboard.press_and_release('esc')
     time.sleep(1)
-    pyautogui.moveTo(x=1665, y=995)
-    pyautogui.click()
+    keyboard.press_and_release('ctrl+shift+5')
     time.sleep(1)
-    pyautogui.moveTo(x=1040, y=75)
-    pyautogui.click()
+    keyboard.press_and_release('delete')
     time.sleep(1)
     keyboard.press_and_release('t')
     time.sleep(1)
     keyboard.press_and_release('F11')
+    return
 
 
 def reboot_program():
     """에피소드 50회당 프로그램 리부트"""
-    keyboard.press_and_release('esc')
-    time.sleep(1)
-    pyautogui.moveTo(x=1630, y=15)
-    pyautogui.click()
-    time.sleep(1)
-    pyautogui.moveTo(x=950, y=540)
-    pyautogui.click()
+    subprocess.run(KILL_PROGRAM_COMMAND)
     time.sleep(15)
-    pyautogui.moveTo(x=665, y=1030)
-    pyautogui.click()
+    subprocess.Popen(REBOOT_PROGRAM_COMMAND)
     time.sleep(45)
-    pyautogui.moveTo(x=1490, y=120)
-    pyautogui.click()
-    time.sleep(1)
     keyboard.press_and_release('t')
     time.sleep(1)
     keyboard.press_and_release('F11')
+    return
 
 
 def trainer(mode):
@@ -297,7 +290,7 @@ def trainer(mode):
     # 학습 진행
     for episode in range(epoch_origin-epoch+1, epoch_origin+1):
         learning_sequence(mode, init, tensorboard, episode)
-        if episode % 10 == 0:
+        if episode % 10 == 0 and mode:
                 reboot_program() if episode % 50 == 0 else reboot_game()
     # 플로팅 인스턴스 제거
     tensorboard.close()
@@ -306,13 +299,6 @@ def trainer(mode):
 
 def tester():
     """테스트"""
-    ############################################################################################
-    # 1-상태 6-행동생성 및 시행(새 detect.py 제작도 고려)
-    # 1. 현재상태 -> 상태발생기 활용 -> 6단계 미래 생성
-    # 2. 6단계의 미래에 대한 순차적 행동시퀀스 생성 및 실행
-    # 3. t+1 == t+2인 상태이미지를 현재상태로 재정의
-    # 4. 앞선 작업 반복
-    ############################################################################################
     # 테스트 하이퍼파라미터 가져오기
     epoch_origin, epoch = new_or_load_test()
     # 테스트 하이퍼파라미터 저장

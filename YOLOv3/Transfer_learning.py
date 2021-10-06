@@ -4,6 +4,7 @@ import RL_Header as RL
 import random
 import Main_Header as Main
 
+
 def init_state_generator():
     """랜덤 초기상태(총가지 2개)"""
     # 5, 4단에서 선택 1
@@ -20,6 +21,7 @@ def init_state_generator():
     # 나뭇가지 상태생성
     branch = float(front+rear)
     return torch.tensor([branch, random.choice([61., 62.]), 0., 0., 0.], device='cuda'), False
+
 
 def state_generator(state, action):
     """다음상태 발생"""
@@ -44,6 +46,7 @@ def state_generator(state, action):
         if branch[len(branch)-2:] not in ['11', '12'] and len(branch) <= 4 and random.uniform(0, 1) > 0.333:
             branch = branch+'11' if branch[len(branch)-2:] == '21' else branch+'12' if branch[len(branch)-2:] == '22' else branch+random.choice(['11', '12'])
         return torch.tensor([float(branch), float(player), 0., 0., 0.], device='cuda'), False
+
 
 if __name__ == '__main__':
     # 매개변수 파싱
@@ -71,23 +74,23 @@ if __name__ == '__main__':
         reward = env.Reward(state, done)
         # TD-(N)
         if agent.Step_mode:
-            agent.Batch.append([state.detach(), reward, next_state.detach(), done])
+            agent.Batch.append([state.detach(), action, reward, next_state.detach()])
             if done:
                 for i in range(len(agent.Batch)):
-                    State, V_value, Reward, Advantage, Q_value = agent.Variable_ready_for_TD_N()
-                    agent.Update_by_TD(State, V_value, Reward, Advantage, Q_value)
+                    State, V_value, Action, Reward, Advantage, Q_value = agent.Variable_ready_for_TD_N_Parallel()
+                    agent.Update_by_TD(State, V_value, Action, Reward, Advantage, Q_value)
                     # 완료된 배치 대기열 큐 내 상태 제거
                     agent.Batch.popleft()
             # 배치크기 충족 시, Advantage, Q_value 계산 및 업데이트
             elif len(agent.Batch) == agent.Batch_size:
                 # Advantage, Q_value 계산 및 업데이트
-                State, V_value, Reward, Advantage, Q_value = agent.Variable_ready_for_TD_N()
-                agent.Update_by_TD(State, V_value, Reward, Advantage, Q_value)
+                State, V_value, Action, Reward, Advantage, Q_value = agent.Variable_ready_for_TD_N_Parallel()
+                agent.Update_by_TD(State, V_value, Action, Reward, Advantage, Q_value)
                 # 완료된 배치 대기열 큐 내 상태 제거
                 agent.Batch.popleft()
         # TD-(0)
         else:
-            v_v, adv, q_v = agent.Variable_ready_for_TD_0(state, reward, next_state, done)
+            v_v, adv, q_v = agent.Variable_ready_for_TD_N_Parallel(state, reward, next_state, done)
             agent.Update_by_TD(state, v_v, reward, adv, q_v)
         agent.Step_stack += 1
         # RL.Print_all(state, action, reward, next_state, v_v, n_v, q_v, adv)

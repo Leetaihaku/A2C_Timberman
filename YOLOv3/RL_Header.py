@@ -1,7 +1,6 @@
 import Main_Header as Main
 import torch
 import torch.nn.functional as F
-import torchsummary as ts
 import keyboard
 import numpy as np
 import os.path as op
@@ -116,9 +115,6 @@ class Agent:
         self.index = 0
         self.Step_mode = step_mode
         self.Batch_size = batch_size
-        # 모델 요약
-        # ts.summary(self.Actor, (1, STATE_DIM), device='cuda')
-        # ts.summary(self.Critic, (1, STATE_DIM), device='cuda')
 
 
     def Start(self, mode='train'):
@@ -154,7 +150,6 @@ class Agent:
         self.Epsilon = self.Epsilon - self.Epsilon_discount if self.Epsilon > self.Epsilon_lower_limit else self.Epsilon_lower_limit
         action = self.Actor(self.State_to_network_input(state))
         action = action.argmin().item() if self.Epsilon > np.random.uniform(0, 1) else action.argmax().item()
-        print(f'action : {action}')
         if mode == 'train':
             keyboard.press_and_release(ACTION_OPTION[action])
         return action
@@ -190,30 +185,6 @@ class Agent:
         q_value = reward + GAMMA * next_v_value
         advantage = q_value - v_value
         return v_value, advantage, q_value
-
-
-    def Variable_ready_for_TD_N(self):
-        """신경망 업데이트 재료변수 계산-TD(N)"""
-        # 그래디언트 중복방지용 연산대상 인스턴스 생성
-        state = self.Batch[0][0]
-        v_value = self.Critic(self.Batch[0][0])
-        reward = self.Batch[0][2]
-        next_v_value = self.Critic(self.Batch[-1][3])
-
-        # Step 별 update 필요변수 준비
-        partial_g = torch.zeros(1, device='cuda')
-        # 부분 반환값 계산1 (보상 GAMMA 감가)
-        for i in range(len(self.Batch)):
-            self.Batch[i][2] = torch.mul(self.Batch[i][2], GAMMA**i)
-            partial_g = torch.add(partial_g, self.Batch[i][2])
-        # 부분 반환값 계산2 (N-step 상태가치함수 GAMMA 감가)
-        discounted_next_v_value = torch.mul(next_v_value, GAMMA**(len(self.Batch))).detach()
-
-        # 행동가치함수 계산
-        q_value = torch.add(partial_g, discounted_next_v_value)
-        # Advantage 계산
-        advantage = torch.sub(q_value, v_value).detach()
-        return state, v_value, reward, advantage, q_value
 
 
     def Variable_ready_for_TD_N_Parallel(self):
@@ -280,7 +251,6 @@ class Agent:
         """5-step 훈련 :: 1-step 미래상태 생성"""
         for step in range(5):
             # 상태에 따른 정책행동 실행 & 안정화 지연
-            print(f'state : {state}')
             mini_action = self.Action(state)
             time.sleep(TRAIN_ACTION_DELAY)
             # 행동에 따른 다음상태 케이스 분류
