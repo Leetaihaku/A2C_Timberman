@@ -97,16 +97,12 @@ def detect(save_img=False):
     pyautogui.moveTo(x=960, y=640)
     pyautogui.doubleClick()
 
-    ########################################################################################################
-    ########################################################################################################
-    # 에피소드 시작
+    # 에피소드 시작 및 안정화 지연
     Agent.Start()
-    # 안정화 지연
     time.sleep(3)
 
     # 탐지 모듈(상태 생성기) 루프
     for path, img, im0s, vid_cap in dataset:
-        ########################################################################################################
         # 에피소드 시작
         # 렉 체크
         Lag_check += 1
@@ -124,8 +120,8 @@ def detect(save_img=False):
         # 행동 선택 및 시행
         if not Skip:
             Action = Agent.Action(State)
-        ########################################################################################################
 
+        ########################################################################################################
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -182,14 +178,10 @@ def detect(save_img=False):
                         center_array.append([label[:-5], center])
 
             # 실시간 모니터링 화면 출력
-            if view_img: show_detecting_img('Detector', im0)
-
+            # if view_img: show_detecting_img('Detector', im0)
         ########################################################################################################
-        # 다음상태 추출(단, 종점이면 다음 상태 = [0, 0, 0, 0, 0])
-        # 탐지(raw status) -> 상태(converted status) = 격자상태 변환
+        # 다음상태 추출, 탐지(raw status → grid status), 추출상태 적합성 판단
         Next_state = Environment.Step(center_array)
-
-        # 추출 다음상태 적합성 판단
         # 행동 X (최초상태 할당조건)
         if Action is None:
             # 변화 O/X 판단 (전후상황동일, 전상황 유의미, 후상황 유의미, 전후상황 플레이어 생존)
@@ -201,18 +193,14 @@ def detect(save_img=False):
             # 변화 X, 다음 이미지 받아오기
             if Skip: continue
 
-        ########################################################################################################
-        # 다음 프로세스 진행(보상 수여, 스택쌓기 => 신경망 업데이트) 조건
+        # 보상 수여, 스택쌓기 => 신경망 업데이트
         # 배치 제어
         if not Skip and Action is not None:
             # 종료확인 및 보상수여
             Done = True if int(Next_state[1]) == 0 else False
             Reward = Environment.Reward(State, Done)
-            # 어드밴티지, 갱신 현재 상태가지 계산 및 업데이트
-            # TD(0) vs TD(n)
             # TD(N)
             if Agent.Step_mode:
-                # 배치 저장
                 Agent.Save_batch(State.detach(), Action, Reward, Next_state.detach())
                 if Done:
                     for i in range(len(Agent.Batch)):
@@ -232,12 +220,9 @@ def detect(save_img=False):
                 # 현재 상태가치 및 다음 상태가치 계산
                 V_value, Advantage, Q_value = Agent.Variable_ready_for_TD_0(State, Reward, Next_state)
                 Agent.Update_by_TD(State, V_value, Action, Reward, Advantage, Q_value)
-            # 손실 및 보상 평균 연산용 분모변수
+            # 손실 및 보상 평균 연산용 분모변수 및 렉 체크 변수 비우기
             Agent.Step_stack += 1
-            # 렉 체크 변수 비우기
             Lag_check = 0
-            # 디버깅용 상태체크 출력함수
-            # RL.Print_all(State, Action, Reward, Next_state, V_value, Next_V_value, Q_value, Advantage)
 
         # 에피소드 종료 및 마지막 배치 업데이트
         if Done: break
@@ -246,16 +231,12 @@ def detect(save_img=False):
             State = Next_state
             Action = None
 
-        ########################################################################################################
-
-    ########################################################################################################
     # 학습 종료 → 신경망 가중치 저장, 메인프로세스로 학습결과 반환
     torch.save(Agent.Actor.state_dict(), Main.MODEL_PATH+Main.TBA)
     torch.save(Agent.Critic.state_dict(), Main.MODEL_PATH+Main.TBC)
     # export 용 데이터 출력
     print(Agent.Actor_loss_stack.item()/Agent.Step_stack, Agent.Critic_loss_stack.item()/Agent.Step_stack, Agent.Reward_stack.item())
-    ########################################################################################################
-    ########################################################################################################
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -275,7 +256,7 @@ if __name__ == '__main__':
     parser.add_argument('--project', default='runs/detect', help='save results to project/name')
     parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--epsilon', type=float, default=0.999, help='epsilon value')
+    parser.add_argument('--epsilon', type=float, default=1.0, help='epsilon value')
     parser.add_argument('--epsilon_discount', type=float, default=0.001, help='epsilon_discount value')
     parser.add_argument('--learning_rate', type=float, default=0.001, help='learning value')
     parser.add_argument('--node', type=int, default=32, help='num of node')

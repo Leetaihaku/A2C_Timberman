@@ -26,6 +26,7 @@ def show_detecting_img(name, im0):
     im0 = cv2.resize(im0, (1080, 720))
     cv2.imshow(name, im0)
 
+
 def detect(save_img=False):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
     webcam = source.isnumeric() or source.endswith('.txt') or source.lower().startswith(('rtsp://', 'rtmp://', 'http://'))
@@ -69,35 +70,25 @@ def detect(save_img=False):
     _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
 
     ########################################################################################################
-    # 에피소드 초기 설정
-    # 초기 설정(환경, 에이전트, 상태 생성, 에피소드 시종제어 등등)
+    # 에피소드 초기 설정(환경, 에이전트, 상태 생성, 에피소드 시종제어 등등)
     Environment = RL.Environment()
     Agent = RL.Agent(float(opt.epsilon), float(opt.epsilon_discount), float(opt.learning_rate), int(opt.node), bool(opt.step_mode), int(opt.batch_size))
     State = torch.tensor([0., 0., 0., 0., 0.], device='cuda')
     Done = False
     SECOND = False
-    # 게임 활성화 클릭 에피소드 시작 준비
-    # 활성화
+    # 게임 활성화
     pyautogui.moveTo(x=960, y=640)
     pyautogui.doubleClick()
-
-    ########################################################################################################
-    ########################################################################################################
-    # 에피소드 시작
+    # 에피소드 시작 및 안정화 지연
     Agent.Start()
-    # 안정화 지연
     time.sleep(3)
 
     # 탐지 모듈(상태 생성기) 루프
     for path, img, im0s, vid_cap in dataset:
-        ########################################################################################################
-
-        # 에피소드 시작
-        # 탐지 버퍼 초기화
+        # 에피소드 시작 및 탐지 버퍼 초기화
         center_array = []
 
         ########################################################################################################
-
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -154,14 +145,11 @@ def detect(save_img=False):
                         center_array.append([label[:-5], center])
 
             # 실시간 모니터링 화면 출력
-            if view_img: show_detecting_img('Detector', im0)
-
+            # if view_img: show_detecting_img('Detector', im0)
         ########################################################################################################
-        # 다음상태 추출(단, 종점이면 다음 상태 = [0, 0, 0, 0, 0])
-        # 탐지(raw status) -> 상태(converted status) = 격자상태 변환
-        Next_state = Environment.Step(center_array)
 
-        # 추출상태 적합성 판단
+        # 다음상태 추출, 탐지기반 상태변환(raw status → grid status), 추출상태 적합성 판단
+        Next_state = Environment.Step(center_array)
         # 적합
         if not Environment.Init_state_check(State, Next_state):
             SECOND = True
@@ -178,8 +166,6 @@ def detect(save_img=False):
         # 상태 전달 및 버퍼 비우기
         else: State = Next_state
 
-    ########################################################################################################
-    ########################################################################################################
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
