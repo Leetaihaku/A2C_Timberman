@@ -91,7 +91,6 @@ def detect(save_img=False):
     Action = None
     Done = False
     Lag_check = 0
-    Revive_env = False
     # 게임 활성화 클릭 에피소드 시작 준비
     # 활성화
     pyautogui.moveTo(x=960, y=640)
@@ -107,12 +106,8 @@ def detect(save_img=False):
         # 렉 체크
         Lag_check += 1
         if Lag_check > 1000:
-            if Revive_env:
-                reboot_game()
-                break
-            else:
-                keyboard.press_and_release(RL.ACTION_OPTION[Action])
-                Revive_env = True
+            reboot_game()
+            break
 
         # 탐지 버퍼 초기화
         center_array = []
