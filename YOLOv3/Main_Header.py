@@ -271,6 +271,7 @@ def reboot_program():
     time.sleep(15)
     subprocess.Popen(REBOOT_PROGRAM_COMMAND)
     time.sleep(45)
+    pyautogui.doubleClick(x=1274, y=214)
     keyboard.press_and_release('t')
     time.sleep(1)
     keyboard.press_and_release('F11')
@@ -283,7 +284,7 @@ def trainer(mode):
     epoch_origin, epoch, epsilon, epsilon_discount, learning_rate, node, step_mode, batch_size = new_or_load(mode)
     # 학습 하이퍼파라미터 저장
     init_lr_params_write(mode, epoch_origin, epoch, epsilon, epsilon_discount, learning_rate, node, step_mode, batch_size)
-    # 학습 그래프 모듈 실행 & 불확실성 감소 값
+    # 학습 그래프 모듈 실행
     tensorboard = SummaryWriter(log_dir=('runs/trainer' if mode else 'runs/transfer'))
     # 실행 배치파일 전달명령어 원본 추출
     init = cmd_init(mode)

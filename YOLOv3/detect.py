@@ -106,7 +106,6 @@ def detect(save_img=False):
         # 렉 체크
         Lag_check += 1
         if Lag_check > 1000:
-            reboot_game()
             break
 
         # 탐지 버퍼 초기화
@@ -192,6 +191,9 @@ def detect(save_img=False):
         # 배치 제어
         if not Skip and Action is not None:
             # 종료확인 및 보상수여
+
+            print(f'State : {State}')
+
             Done = True if int(Next_state[1]) == 0 else False
             Reward = Environment.Reward(State, Done)
             # TD(N)

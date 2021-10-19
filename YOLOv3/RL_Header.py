@@ -19,8 +19,8 @@ VALUE_DIM = 1
 # 행동, 행동 차원
 ACTION_OPTION = ['a', 'd']
 ACTION_DIM = 2
-# 학습률
-EPSILON_LOWER_LIMIT = 1e-3
+# 불확실성 하한선
+EPSILON_LOWER_LIMIT = 0.15
 # 할인률
 GAMMA = 0.9
 # N-step 할인률 리스트
@@ -206,7 +206,6 @@ class Agent:
         self.Actor.train()
         self.Optimizer1.zero_grad()
         self.Actor_loss = - self.Actor(self.State_to_network_input(state))[action] * advantage
-        print(self.Actor_loss)
         self.Actor_loss.backward(retain_graph=True)
         self.Optimizer1.step()
         self.Actor.eval()
