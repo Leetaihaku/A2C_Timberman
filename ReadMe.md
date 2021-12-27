@@ -1,5 +1,5 @@
 <!-- Header -->
-# 모바일 게임플레이 행동 정책 학습을 위한 YOLOv3 기반 강화학습
+# 모바일 게임플레이 행동 정책 학습을 위한 YOLOv3 기반 강화학습(YOLOv3 based Reinforcement learning for Mobile game playing policy)
 ## 정보(Information)
 --- 
 
@@ -36,62 +36,35 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 <tr>
     <td>하드웨어 개발 환경(HW-Environment)</td>
     <td>
-    <img src="https://img.shields.io/badge/CPU-i5_6500-0078D6?
-                style=plastic
-                &logo=Windows
-                &logoColor=white"/>
-    <img src="https://img.shields.io/badge/GPU-GTX_1060-44A833?
-                style=plastic
-                &logo=Anaconda
-                &logoColor=white"/>
+    <img src="https://img.shields.io/badge/CPU-i5_6500-44A833?style=plastic&logoColor=white"/>
+    <img src="https://img.shields.io/badge/GPU-GTX_1060-44A833?style=plastic&logoColor=white"/>
     </td>
 </tr>
 <tr>
     <td>소프트웨어 개발 환경(SW-Environment)</td>
     <td>
-    <img src="https://img.shields.io/badge/OS-Windows-0078D6?
-                style=plastic
-                &logo=Windows
-                &logoColor=white"/>
-    <img src="https://img.shields.io/badge/ENV-Anaconda-44A833?
-                style=plastic
-                &logo=Anaconda
-                &logoColor=white"/>
+    <img src="https://img.shields.io/badge/OS-Windows-0078D6?style=plastic&logo=Windows&logoColor=white"/>
+    <img src="https://img.shields.io/badge/ENV-Anaconda-44A833?style=plastic&logo=Anaconda&logoColor=white"/>
     </td>
 </tr>
 <tr>
     <td>개발 언어(Language)</td>
     <td>
-    <img src="https://img.shields.io/badge/LANG-Python-3776AB?
-                style=plastic
-                &logo=Python
-                &logoColor=white"/>
+    <img src="https://img.shields.io/badge/LANG-Python-3776AB?style=plastic&logo=Python&logoColor=white"/>
     </td>
 </tr>
 <tr>
     <td>라이브러리(Library)</td>
     <td>
-    <img src="https://img.shields.io/badge/DL-PyTorch-EE4C2C?
-                style=plastic
-                &logo=PyTorch
-                &logoColor=white"/> 
-    <img src="https://img.shields.io/badge/DL-NumPy-013243?
-                style=plastic
-                &logo=NumPy
-                &logoColor=white"/>
-    <img src="https://img.shields.io/badge/IMG_PROCESS-OpenCV-5C3EE8?
-                style=plastic
-                &logo=OpenCV
-                &logoColor=white"/>
+    <img src="https://img.shields.io/badge/DL-PyTorch-EE4C2C?style=plastic&logo=PyTorch&logoColor=white"/> 
+    <img src="https://img.shields.io/badge/DL-NumPy-013243?style=plastic&logo=NumPy&logoColor=white"/>
+    <img src="https://img.shields.io/badge/IMG_PROCESS-OpenCV-5C3EE8?style=plastic&logo=OpenCV&logoColor=white"/>
     </td>
 </tr>
 <tr>
     <td>보조(외부) 프로그램(External program)</td>
     <td>
-    <img src="https://img.shields.io/badge/Web_Cam-ManyCam-00CEC8?
-                style=plastic
-                &logo=ManyCam
-                &logoColor=white"/>
+    <img src="https://img.shields.io/badge/Web_Cam-ManyCam-00CEC8?&logo=ManyCam&logoColor=white"/>
     </td>
 </tr>
 </tbody>
@@ -102,8 +75,8 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 ## 시연영상(Demonstration video)
 --- 
 
-![시연영상_1](.\ReadMe\설계변환후_1.gif "시연영상_1")
-![시연영상_2](.\ReadMe\설계변환후_2.gif "시연영상_2")
+![설계변환후_1](https://user-images.githubusercontent.com/46801090/147499441-287d8785-0e61-44e8-a52c-2f9c768e924c.gif)
+![설계변환후_2](https://user-images.githubusercontent.com/46801090/147499443-ec7ebc56-0655-4bc2-a0d8-be4910aa840d.gif)
 
 <br><br><br><br><br>
 
@@ -112,8 +85,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 
 ### 학습모델 구조도(학습모델의 반복학습 절차)
 ### Structure diagram of learning model (repeated learning procedure of learning model)
-![A2C,T-A2C모델구조](.\ReadMe\A2C,T-A2C모델구조.jpg "A2C,T-A2C모델구조")
-
+![A2C,T-A2C모델구조](https://user-images.githubusercontent.com/46801090/147499297-ed1abf45-edb3-4132-b081-e015db367cab.jpg)
 <ol>
     1. 상태추출 : S_t >> 현재상태 추출<br>
     2. 행동추출 및 실행 : A_t >> 선택 가능한 행동 중 택 1<br>
@@ -128,7 +100,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 
 ### 보상함수 구조도
 ### Structure diagram of the reward function
-![보상함수](.\ReadMe\보상함수.gif "보상함수")
+![보상함수](https://user-images.githubusercontent.com/46801090/147499430-d873f022-8508-4f4a-bc2d-efb845fa0d35.gif)
 <ol>
     1. 기본 보상(Basic)<br>
     <ul>
@@ -149,7 +121,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 
 ### 프로그램 흐름도(Flow chart)
 
-![프로그램흐름도](.\ReadMe\프로그램흐름도.jpg "프로그램흐름도")
+![프로그램흐름도](https://user-images.githubusercontent.com/46801090/147499423-5ed1dbe1-167c-4e8b-bbe3-c3d7209113af.jpg)
 
 <ol>
     1. 상태 추출<br>
@@ -171,8 +143,9 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 ---
 
 ### 상태도메인 축소(State domain reduction)
-![상태3진화_1](.\ReadMe\상태3진화_1.jpg "상태3진화_1")
-![상태3진화_2](.\ReadMe\상태3진화_2.jpg "상태3진화_2")
+![상태3진화_1](https://user-images.githubusercontent.com/46801090/147499435-7a37b7c5-0173-4490-ae0e-f261ae582ed4.jpg)
+![상태3진화_2](https://user-images.githubusercontent.com/46801090/147499440-6cd11df8-59ea-4ed8-b8ff-630868c13180.jpg)
+![탐지](https://user-images.githubusercontent.com/46801090/147499449-8d4b1323-1db1-48f6-8d72-d211df81dca5.gif)
 
 - 상태 표현 3진화에 따라 상태도메인 축소<br><br>
 - 변경 전(픽셀 수 = 900x1600 = 1,440,000개) → 변경 후(층계 별 장애물 정보 = 6개)
@@ -180,7 +153,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 <br><br><br>
 
 ### 전이학습 적용(Transfer learning application)
-![전이학습](.\ReadMe\전이학습.jpg "전이학습")
+![전이학습](https://user-images.githubusercontent.com/46801090/147499448-771e11d3-420e-4e07-b6a7-f2037104aa26.jpg)
 
 - 본 게임 환경과 유사한 코드 레벨 가상 환경 모듈에 대해 사전 학습 1000회 수행<br><br>
 - 사전 학습을 수행함으로써 초기 유리한 가중치 설정 및 궁극적인 학습 성능 향상 도모
@@ -188,7 +161,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 <br><br><br>
 
 ### 분산강화학습 적용(Distributed reinforcement learning application)
-![A3C모델구조](.\ReadMe\A3C모델구조.jpg "A3C모델구조")
+![A3C모델구조](https://user-images.githubusercontent.com/46801090/147499424-b44d14cf-af52-4c8e-b0ff-6e09287423ae.jpg)
 
 - 다개체 기반 학습모델 알고리즘(A3C)를 활용한 분산강화학습을 통해 궁극적인 학습 성능 향상 도모<br><br>
 - 멀티 에이전트 모델의 반복학습 절차
@@ -204,7 +177,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 ## 학습성능 및 실험결과(Learning performance and Experimental results)
 ---
 
-![T-A2C성능](.\ReadMe\T-A2C성능.jpg "T-A2C성능")
+![T-A2C성능](https://user-images.githubusercontent.com/46801090/147499428-8136b3b7-87c2-4861-aa85-a9c2acf74294.jpg)
 ### A2C / T-A2C 모델 간 성능 비교(Learning performance comparison between A2C and T-A2C)
 <ol>
     1. 액터 신경망
@@ -225,7 +198,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 
 <br><br><br>
 
-![A3C성능](.\ReadMe\A3C성능.jpg "A3C성능")
+![A3C성능](https://user-images.githubusercontent.com/46801090/147499426-bd7d559a-1100-4db1-ac9f-efaf27837bcc.jpg)
 ### A2C / A3C 모델 간 성능 비교(Learning performance comparison between A2C and A3C)
 <ol>
     1. 액터 신경망
@@ -244,7 +217,7 @@ Comparison of learning performance between A2C, a deep reinforcement learning mo
 
 <br><br><br>
 
-![실험결과](.\ReadMe\실험결과.jpg "실험결과")
+![실험결과](https://user-images.githubusercontent.com/46801090/147499446-a172a3c7-a9e7-4e0e-b180-2a2baf4b87ed.jpg)
 ### 모델 별 10회 실험결과(Result of 10 experiments per model)
 - A3C 모델의 10회 실험 간 취득점수 기댓값 : 174점<br><br>
 - T-A2C 모델의 10회 실험 간 취득점수 기댓값 : 173.5점<br><br>
