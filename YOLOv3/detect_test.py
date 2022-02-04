@@ -21,11 +21,10 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized
 def show_detecting_img(name, im0):
     """오픈소스-감지이미지 출력"""
     cv2.namedWindow(name)
-    cv2.moveWindow(name, 1680, -550)
+    cv2.moveWindow(name, 1920, -550)
     cv2.resizeWindow(name, 1080, 720)
     im0 = cv2.resize(im0, (1080, 720))
     cv2.imshow(name, im0)
-
 
 def detect(save_img=False):
     source, weights, view_img, save_txt, imgsz = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size
@@ -70,25 +69,34 @@ def detect(save_img=False):
     _ = model(img.half() if half else img) if device.type != 'cpu' else None  # run once
 
     ########################################################################################################
-    # 에피소드 초기 설정(환경, 에이전트, 상태 생성, 에피소드 시종제어 등등)
+    # 에피소드 초기 설정
+    # 초기 설정(환경, 에이전트, 상태 생성, 에피소드 시종제어 등등) 및 변수(Skip 변수 = 최초 상태 인식 위함) 선언
     Environment = RL.Environment()
     Agent = RL.Agent(float(opt.epsilon), float(opt.epsilon_discount), float(opt.learning_rate), int(opt.node), bool(opt.step_mode), int(opt.batch_size))
     State = torch.tensor([0., 0., 0., 0., 0.], device='cuda')
     Done = False
-    SECOND = False
-    # 게임 활성화
+    # 게임 활성화 클릭 에피소드 시작 준비
+    # 활성화
     pyautogui.moveTo(x=960, y=640)
     pyautogui.doubleClick()
-    # 에피소드 시작 및 안정화 지연
+
+    ########################################################################################################
+    ########################################################################################################
+    # 에피소드 시작
     Agent.Start()
+    # 안정화 지연
     time.sleep(3)
 
     # 탐지 모듈(상태 생성기) 루프
     for path, img, im0s, vid_cap in dataset:
-        # 에피소드 시작 및 탐지 버퍼 초기화
+        ########################################################################################################
+
+        # 에피소드 시작
+        # 탐지 버퍼 초기화
         center_array = []
 
         ########################################################################################################
+
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
@@ -145,27 +153,32 @@ def detect(save_img=False):
                         center_array.append([label[:-5], center])
 
             # 실시간 모니터링 화면 출력
-            if view_img: show_detecting_img('Detector', im0)
-        ########################################################################################################
+            # if view_img: show_detecting_img('Detector', im0)
 
-        # 다음상태 추출, 탐지기반 상태변환(raw status → grid status), 추출상태 적합성 판단
+        ########################################################################################################
+        # 다음상태 추출(단, 종점이면 다음 상태 = [0, 0, 0, 0, 0])
+        # 탐지(raw status) -> 상태(converted status) = 격자상태 변환
         Next_state = Environment.Step(center_array)
-        # 적합
+
+        # 추출 다음상태 적합성 판단
+        # 행동 X (최초상태 할당조건) & 변화 O/X 판단 (전후상황동일, 전상황 유의미, 후상황 유의미, 전후상황 플레이어 생존)
         if not Environment.Init_state_check(State, Next_state):
-            SECOND = True
-            Next_state, Done = Agent.Step5_testing(State)
-            # 안정화 지연
-            time.sleep(RL.TEST_DETECT_DELAY)
-        # 부적합(시간제한초과에 따른 비정상 종료)
-        elif SECOND and (torch.equal(Next_state, torch.tensor([0., 0., 0., 0., 1.], device='cuda'))
-            or torch.equal(Next_state, torch.tensor([0., 0., 1., 1., 0.], device='cuda'))):
-            Done = True
+            # 종료상태 파악
+            if torch.equal(State, torch.tensor([0., 0., 0., 0., 1.], device='cuda')) or torch.equal(State, torch.tensor([0., 0., 1., 1., 0.], device='cuda')):
+                Done = True
+            # 상태 6개 발생 및 해당 행동 실행
+            else:
+                Agent.Action6_executer(Environment.Future6_generator(str(int(State[0].item()))))
 
         # 에피소드 종료 및 마지막 배치 업데이트
-        if Done: break
+        if Done:
+            break
         # 상태 전달 및 버퍼 비우기
-        else: State = Next_state
+        else:
+            State = Next_state
 
+    ########################################################################################################
+    ########################################################################################################
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
